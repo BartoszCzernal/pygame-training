@@ -13,6 +13,10 @@ y = 50
 width = 40
 height = 60
 velocity = 5
+
+is_jump = False
+jump_count = 10
+
 run = True
 
 while run:
@@ -34,16 +38,29 @@ while run:
             x += velocity
         else:
             x = win_width - width
-    if keys[pygame.K_UP]:
-        if y > velocity:
-            y -= velocity
+    if not is_jump:
+        if keys[pygame.K_UP]:
+            if y > velocity:
+                y -= velocity
+            else:
+                y = 0
+        if keys[pygame.K_DOWN]:
+            if y < win_height - height - velocity:
+                y += velocity
+            else:
+                y = win_height - height
+        if keys[pygame.K_SPACE]:
+            is_jump = True
+    else:
+        if jump_count >= -10:
+            neg = 1
+            if jump_count < 0:
+                neg = -1
+            y -= jump_count ** 2 * 0.5 * neg
+            jump_count -= 1
         else:
-            y = 0
-    if keys[pygame.K_DOWN]:
-        if y < win_height - height - velocity:
-            y += velocity
-        else:
-            y = win_height - height
+            is_jump = False
+            jump_count = 10
 
     win.fill((0, 0, 0))
     pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
