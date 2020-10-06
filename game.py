@@ -60,15 +60,58 @@ class Projectile:
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
 
+class Enemy:
+    walk_right = [pygame.image.load(f'R{frame}E.png') for frame in range(1, 12)]
+    walk_left = [pygame.image.load(f'L{frame}E.png') for frame in range(1, 12)]
+
+    def __init__(self, x, y, width, height, end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [self.x, self.end]
+        self.walk_count = 0
+        self.velocity = 3
+
+    def draw(self, win):
+        self.move()
+        if self.walk_count + 1 >= 33:
+            self.walk_count = 0
+
+        if self.velocity > 0:
+            win.blit(self.walk_right[self.walk_count // 3], (self.x, self.y))
+            self.walk_count += 1
+        else:
+            win.blit(self.walk_left[self.walk_count // 3], (self.x, self.y))
+            self.walk_count += 1
+
+    def move(self):
+        if self.velocity > 0:
+            if self.x + self.velocity < self.path[1]:
+                self.x += self.velocity
+            else:
+                self.velocity = self.velocity * -1
+                self.walk_count = 0
+        else:
+            if self.x + self.velocity > self.path[0]:
+                self.x += self.velocity
+            else:
+                self.velocity = self.velocity * -1
+                self.walk_count = 0
+
+
 def redraw_game_window():
     win.blit(bg, (0, 0))
     man.draw(win)
+    goblin.draw(win)
     for bullet in bullets:
         bullet.draw(win)
     pygame.display.update()
 
 
 man = Player(300, 410, 64, 64)
+goblin = Enemy(100, 410, 64, 64, 450)
 bullets = []
 run = True
 while run:
